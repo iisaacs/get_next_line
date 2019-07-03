@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/07/01 10:12:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/01 15:40:43 by iisaacs          ###   ########.fr       */
+/*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
+/*   Updated: 2019/07/03 14:38:00 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 static t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 {
 	t_vlst *new_node;
-	
+
 	if (!head)
 	{
 		*head = (t_vlst*)malloc(sizeof(t_vlst));
@@ -80,25 +80,31 @@ static	int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 	return (0);
 }
 
-
-static char	*cpy_upd(char **data)
+/* 
+ ** Returns the copied string (from pointer to '\n')
+ ** And update pointer to after the newline.
+ */
+ char	*cpy_upd(char **data)
 {
-	int		i;
 	char	*line;
-	char	*ret_data;
+	char	*str;
+	int		len;
 
-	i = 0;
-	if (!(*data))
+	if ((*data) == '\0')
 		return (NULL);
-	ret_data = (*data);
-	while (ret_data[i] != '\n' && ret_data[i])
-		i++;
-	line = ft_strsub((const char*)(*data), 0, i);
-	if (ret_data[i] == '\n')
-		i++;
-	else if (ret_data[i] == '\0')
+	str = (*data);
+	while (*str != '\n' && (*str)) // increment pointer to '\n'
+		str++;
+	len = str - (*data);  // get number of characters from pointer to '\n'
+	if (!(line = (char *)malloc(sizeof(char) * (len + 1))))
 		return (NULL);
-	(*data) = &ret_data[i];
+	ft_bzero(line, (size_t)(len + 1));
+	line = ft_strncpy(line, (*data), len);
+	if (ft_strlen(line) == 0)
+		return (NULL);
+	while ((*str) == '\n')
+		str++;
+	(*data) = str;
 	return (line);
 }
 
@@ -117,7 +123,7 @@ int		get_next_line(const int fd, char **line)
 	t_vlst			*found;
 
 	ft_bzero(buff, BUFF_SIZE + 1);
-	if (fd < 0 || line == NULL)
+	if (fd < 0 || !line)
 		return (-1);
 	if (!is_fd_lst(fd, head, &found))
 	{
@@ -127,7 +133,7 @@ int		get_next_line(const int fd, char **line)
 				return (-1);
 			temp = new_str;
 			if (!new_str)
-				new_str = ft_strjoin("", (const char*)buff);
+				new_str = ft_strdup((const char*)buff);
 			else
 				new_str = ft_strjoin(new_str, (const char*)buff);
 			free(temp);
@@ -138,9 +144,4 @@ int		get_next_line(const int fd, char **line)
 	if (!((*line) = cpy_upd(&(found->content))))
 		return (0);
 	return (1);
-}
-
-int		main()
-{
-
 }

@@ -6,7 +6,7 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/03 14:38:00 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/03 14:45:24 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ int		get_next_line(const int fd, char **line)
 	static	t_vlst	*head;
 	t_vlst			*found;
 
+	new_str = NULL;
 	ft_bzero(buff, BUFF_SIZE + 1);
 	if (fd < 0 || !line)
 		return (-1);

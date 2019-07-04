@@ -6,7 +6,7 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/03 14:45:24 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/04 13:00:09 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@
 	node = old_node;
 	while (node != NULL)
 	{
-		printf("-------------------------\n");
+		printf("\n-------------------------\n");
 		printf("At: %d\n", i);
 		printf("Fd: %d\n", node->fd);
 		printf("Content: \n%s**\n", node->content);
-		printf("-------------------------");
+		printf("-------------------------\n");
 		node = node->next;
 		i++;
 	}
@@ -84,35 +84,39 @@ static	int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
  ** Returns the copied string (from pointer to '\n')
  ** And update pointer to after the newline.
  */
- char	*cpy_upd(char **data)
+ static int	cpy_upd(char **data, char **line)
 {
-	char	*line;
 	char	*str;
 	int		len;
 
-	if ((*data) == '\0')
-		return (NULL);
 	str = (*data);
+	if ((*str) == '\n')
+	{
+		str++;
+		(*data) = str;
+		(*line) = NULL;
+		return (1);
+	}
 	while (*str != '\n' && (*str)) // increment pointer to '\n'
 		str++;
 	len = str - (*data);  // get number of characters from pointer to '\n'
-	if (!(line = (char *)malloc(sizeof(char) * (len + 1))))
-		return (NULL);
-	ft_bzero(line, (size_t)(len + 1));
-	line = ft_strncpy(line, (*data), len);
-	if (ft_strlen(line) == 0)
-		return (NULL);
-	while ((*str) == '\n')
+	if (!((*line) = (char *)malloc(sizeof(char) * (len + 1))))
+		line = NULL;
+	ft_bzero((*line), (size_t)(len + 1));
+	(*line) = ft_strncpy((*line), (*data), len);
+	if (ft_strlen((*line)) == 0)
+		return (0);
+	if ((*str) == '\n')
 		str++;
 	(*data) = str;
-	return (line);
+	return (1);
 }
 
 /*
  ** if fd does not exist in list, create new node
  ** containing fd and new_str.
  ** Copy from new node's content (char pointer) to '\n', in line.
- */
+ */ 
 int		get_next_line(const int fd, char **line)
 {
 	char			*buff[BUFF_SIZE + 1];
@@ -142,7 +146,23 @@ int		get_next_line(const int fd, char **line)
 		}
 		found = add_vlst(&head, fd, new_str);
 	}
-	if (!((*line) = cpy_upd(&(found->content))))
+	if (!(cpy_upd(&(found->content), line)))
 		return (0);
 	return (1);
+}
+
+int		main()
+{
+	char *line;
+	
+	char *str = "hello\nmy\nslim\n";
+	t_vlst *node;
+	node = (t_vlst*)malloc(sizeof(t_vlst));
+	node->content = str;
+	node->next = NULL;
+	node->fd = 0;
+
+	while(cpy_upd(&(node->content), &line))
+		printf("line: %s\n", line);
+
 }

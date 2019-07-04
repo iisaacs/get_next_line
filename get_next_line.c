@@ -6,7 +6,7 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/04 13:00:09 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/04 15:17:02 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
  **	if head exist, create node with fd and content. And point next to previous head.
  ** return created node.
  */
-static t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
+t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 {
 	t_vlst *new_node;
 
@@ -63,7 +63,7 @@ static t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
  ** Check if fd is in list (reverenced by head), if True point found to node. And return True.
  ** Else return False.
  */
-static	int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
+int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 {
 	t_vlst *current;
 
@@ -84,7 +84,7 @@ static	int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
  ** Returns the copied string (from pointer to '\n')
  ** And update pointer to after the newline.
  */
- static int	cpy_upd(char **data, char **line)
+int	cpy_upd(char **data, char **line)
 {
 	char	*str;
 	int		len;
@@ -94,7 +94,7 @@ static	int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 	{
 		str++;
 		(*data) = str;
-		(*line) = NULL;
+		(*line) = "";
 		return (1);
 	}
 	while (*str != '\n' && (*str)) // increment pointer to '\n'
@@ -151,7 +151,7 @@ int		get_next_line(const int fd, char **line)
 	return (1);
 }
 
-int		main()
+/*int		main()
 {
 	char *line;
 	
@@ -163,6 +163,6 @@ int		main()
 	node->fd = 0;
 
 	while(cpy_upd(&(node->content), &line))
-		printf("line: %s\n", line);
+		printf("line: **%s**\n", line);
 
-}
+}*/

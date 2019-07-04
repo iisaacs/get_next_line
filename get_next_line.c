@@ -6,7 +6,7 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/04 15:17:02 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/04 15:27:01 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 	{
 		*head = (t_vlst*)malloc(sizeof(t_vlst));
 		(*head)->fd = fd;
+		(*head)->start = content;
 		(*head)->content = content;
 		(*head)->next = NULL;
 	}
@@ -52,6 +53,7 @@ t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 	{
 		new_node = (t_vlst*)malloc(sizeof(t_vlst));
 		new_node->fd = fd;
+		new_node->start = content;
 		new_node->content = content;
 		new_node->next = (*head);
 		(*head) = new_node;
@@ -105,7 +107,9 @@ int	cpy_upd(char **data, char **line)
 	ft_bzero((*line), (size_t)(len + 1));
 	(*line) = ft_strncpy((*line), (*data), len);
 	if (ft_strlen((*line)) == 0)
+	{
 		return (0);
+	}
 	if ((*str) == '\n')
 		str++;
 	(*data) = str;
@@ -147,7 +151,10 @@ int		get_next_line(const int fd, char **line)
 		found = add_vlst(&head, fd, new_str);
 	}
 	if (!(cpy_upd(&(found->content), line)))
+	{
+		free(found->start);
 		return (0);
+	}
 	return (1);
 }
 

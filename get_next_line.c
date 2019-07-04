@@ -6,30 +6,11 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/04 15:27:01 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/04 16:20:55 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-/*void	print_values(t_vlst *old_node)
-{
-	int		i = 0;
-
-	t_vlst *node;
-
-	node = old_node;
-	while (node != NULL)
-	{
-		printf("\n-------------------------\n");
-		printf("At: %d\n", i);
-		printf("Fd: %d\n", node->fd);
-		printf("Content: \n%s**\n", node->content);
-		printf("-------------------------\n");
-		node = node->next;
-		i++;
-	}
-}*/
 
 /*
  ** Add node to beginning of list.
@@ -157,19 +138,3 @@ int		get_next_line(const int fd, char **line)
 	}
 	return (1);
 }
-
-/*int		main()
-{
-	char *line;
-	
-	char *str = "hello\nmy\nslim\n";
-	t_vlst *node;
-	node = (t_vlst*)malloc(sizeof(t_vlst));
-	node->content = str;
-	node->next = NULL;
-	node->fd = 0;
-
-	while(cpy_upd(&(node->content), &line))
-		printf("line: **%s**\n", line);
-
-}*/

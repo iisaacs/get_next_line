@@ -6,19 +6,24 @@
 /*   By: iisaacs <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 10:57:49 by iisaacs           #+#    #+#             */
-/*   Updated: 2019/07/04 16:20:55 by iisaacs          ###   ########.fr       */
+/*   Updated: 2019/07/08 13:21:36 by iisaacs          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /*
- ** Add node to beginning of list.
- ** if head is NULL, create node with fd and content. And point next to NULL.
- **	if head exist, create node with fd and content. And point next to previous head.
- ** return created node.
- */
-t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
+**Function to add node to beginning of list.
+**If the head does not exist. Create new_node.
+**And initialize its member with fd and content.
+**Set the next to NULL.
+**If head points to node. Create new node.
+**Initialize members with fd and content.
+**And set next to previous head. New node is now the head.
+**Return head of list.
+*/
+
+static t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 {
 	t_vlst *new_node;
 
@@ -43,10 +48,13 @@ t_vlst	*add_vlst(t_vlst **head, int fd, char *content)
 }
 
 /*
- ** Check if fd is in list (reverenced by head), if True point found to node. And return True.
- ** Else return False.
- */
-int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
+** Check if fd is in list.
+** if it is, initialize 'found' to desired node.
+** return TRUE.
+** Otherwise return FALSE.
+*/
+
+static int		is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 {
 	t_vlst *current;
 
@@ -55,7 +63,7 @@ int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 	{
 		if (fd == current->fd)
 		{
-			*found = current;
+			(*found) = current;
 			return (1);
 		}
 		current = current->next;
@@ -63,11 +71,15 @@ int	is_fd_lst(int fd, t_vlst *head, t_vlst **found)
 	return (0);
 }
 
-/* 
- ** Returns the copied string (from pointer to '\n')
- ** And update pointer to after the newline.
- */
-int	cpy_upd(char **data, char **line)
+/*
+**Function to copy line from string (*data).
+**And to update the string pointer to after
+**the '\n' character.
+**If line at end of function contains nothing return 0;
+**Else return 1
+*/
+
+static int		cpy_upd(char **data, char **line)
 {
 	char	*str;
 	int		len;
@@ -75,60 +87,63 @@ int	cpy_upd(char **data, char **line)
 	str = (*data);
 	if ((*str) == '\n')
 	{
-		str++;
-		(*data) = str;
+		(*data) = ++str;
 		(*line) = "";
 		return (1);
 	}
-	while (*str != '\n' && (*str)) // increment pointer to '\n'
+	while (*str != '\n' && (*str))
 		str++;
-	len = str - (*data);  // get number of characters from pointer to '\n'
+	len = str - (*data);
 	if (!((*line) = (char *)malloc(sizeof(char) * (len + 1))))
 		line = NULL;
 	ft_bzero((*line), (size_t)(len + 1));
 	(*line) = ft_strncpy((*line), (*data), len);
 	if (ft_strlen((*line)) == 0)
-	{
 		return (0);
-	}
 	if ((*str) == '\n')
 		str++;
 	(*data) = str;
 	return (1);
 }
 
-/*
- ** if fd does not exist in list, create new node
- ** containing fd and new_str.
- ** Copy from new node's content (char pointer) to '\n', in line.
- */ 
-int		get_next_line(const int fd, char **line)
+static char		*read_buff(int fd, char *buff, char *new_str, int *ret)
+{
+	char	*temp;
+
+	temp = NULL;
+	new_str = NULL;
+	while ((*ret = read(fd, buff, BUFF_SIZE)))
+	{
+		if (*ret < 0)
+			return (NULL);
+		temp = new_str;
+		new_str = (!new_str) ? ft_strdup((const char*)buff) :
+			ft_strjoin(new_str, (const char*)buff);
+		free(temp);
+		ft_bzero(buff, *ret);
+	}
+	return (new_str);
+}
+
+int				get_next_line(const int fd, char **line)
 {
 	char			*buff[BUFF_SIZE + 1];
-	char			*temp;
 	char			*new_str;
-	int				ret;
 	static	t_vlst	*head;
 	t_vlst			*found;
+	int				ret;
 
 	new_str = NULL;
 	ft_bzero(buff, BUFF_SIZE + 1);
-	if (fd < 0 || !line)
+	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
 	if (!is_fd_lst(fd, head, &found))
 	{
-		while ((ret = read(fd, buff, BUFF_SIZE)))
-		{
-			if (ret < 0)
-				return (-1);
-			temp = new_str;
-			if (!new_str)
-				new_str = ft_strdup((const char*)buff);
-			else
-				new_str = ft_strjoin(new_str, (const char*)buff);
-			free(temp);
-			ft_bzero(buff, ret);
-		}
+		new_str = read_buff(fd, (char *)buff, new_str, &ret);
+		if (ret < 0)
+			return (-1);
+		if (!new_str)
+			return (0);
 		found = add_vlst(&head, fd, new_str);
 	}
 	if (!(cpy_upd(&(found->content), line)))
